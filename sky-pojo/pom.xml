@@ -19,9 +19,10 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.2</version>
         </dependency>
+        <!-- 添加Spring Boot Web Starter以支持@DateTimeFormat注解 -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
 </project>
