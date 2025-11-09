@@ -38,8 +38,8 @@ public class EmployeeController {
     /**
      * 登录
      *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeLoginDTO the employee login dto
+     * @return result
      */
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
@@ -68,7 +68,7 @@ public class EmployeeController {
     /**
      * 退出
      *
-     * @return
+     * @return result
      */
     @PostMapping("/logout")
     public Result<String> logout() {
@@ -78,8 +78,8 @@ public class EmployeeController {
     /**
      * 新增员工
      *
-     * @param employeeDTO
-     * @return
+     * @param employeeDTO the employee dto
+     * @return result
      */
     @PostMapping()
     public Result<String> addEmployee(@RequestBody EmployeeDTO employeeDTO){
@@ -91,8 +91,8 @@ public class EmployeeController {
     /**
      * 员工分页查询
      *
-     * @param employeePageQueryDTO
-     * @return
+     * @param employeePageQueryDTO the employee page query dto
+     * @return result
      */
     @GetMapping("/page")
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
@@ -106,9 +106,9 @@ public class EmployeeController {
     /**
      * 修改员工状态
      *
-     * @param status
-     * @param id
-     * @return
+     * @param status the status
+     * @param id     the id
+     * @return result
      */
     @PostMapping("/status/{status}")
     public  Result<String> startOrStop(@PathVariable Integer status,Long id){
@@ -117,6 +117,12 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * 根据id查询员工
+     *
+     * @param id the id
+     * @return the result
+     */
     @GetMapping("/{id}")
     public Result<Employee> getById(@PathVariable Long id){
         log.info("查询id为: {}的员工信息",id);
@@ -124,6 +130,12 @@ public class EmployeeController {
         return Result.success(employee);
     }
 
+    /**
+     * 更新员工信息
+     *
+     * @param employeeDTO the employee dto
+     * @return the result
+     */
     @PutMapping
     public Result<String> update(@RequestBody EmployeeDTO employeeDTO){
         log.info("员工信息修改: {}",employeeDTO);
