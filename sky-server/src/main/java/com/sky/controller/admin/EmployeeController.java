@@ -103,4 +103,18 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 修改员工状态
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public  Result<String> startOrStop(@PathVariable Integer status,Long id){
+        log.info("修改id: {}员工状态为: {}",id,status);
+        employeeService.startOrStop(status,id);
+        return Result.success();
+    }
+
 }
