@@ -84,7 +84,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         employee.setCreateUser(BaseContext.getCurrentId());
         employee.setUpdateUser(BaseContext.getCurrentId());
-        BaseContext.removeCurrentId();
 
         employeeMapper.addEmployee(employee);
     }
@@ -123,6 +122,33 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .updateTime(LocalDateTime.now())
                 .updateUser(BaseContext.getCurrentId())
                 .build();
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据id查询员工
+     *
+     * @param id the id
+     * @return
+     */
+    @Override
+    public Employee getById(Long id) {
+        return employeeMapper.getById(id);
+    }
+
+    /**
+     * 更新员工信息
+     *
+     * @param employeeDTO the employee
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = Employee.builder()
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
         employeeMapper.update(employee);
     }
 }

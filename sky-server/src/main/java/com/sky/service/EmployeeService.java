@@ -14,9 +14,42 @@ public interface EmployeeService {
      * @return
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
+
+    /**
+     * 新增员工
+     *
+     * @param employeeDTO the employee dto
+     */
     void addEmployee(EmployeeDTO employeeDTO);
 
+    /**
+     * 分页查询
+     *
+     * @param employeePageQueryDTO the employee page query dto
+     * @return the page result
+     */
     PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
+    /**
+     * 启用或禁用账号
+     *
+     * @param status the status
+     * @param id     the id
+     */
     void startOrStop(Integer status, Long id);
+
+    /**
+     * 根据id查询员工
+     *
+     * @param id the id
+     * @return the by id
+     */
+    Employee getById(Long id);
+
+    /**
+     * 更新员工信息
+     *
+     * @param employeeDTO the employee
+     */
+    void update(EmployeeDTO employeeDTO);
 }
