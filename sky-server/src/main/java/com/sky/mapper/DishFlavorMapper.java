@@ -7,4 +7,7 @@ import java.util.List;
 @Mapper
 public interface DishFlavorMapper {
     void addBatchDishFlavor(List<DishFlavor> list);
+    void deleteBatchByDishIds(List<Long> dishId);
+
+    List<DishFlavor> getByDishId(Long id);
 }

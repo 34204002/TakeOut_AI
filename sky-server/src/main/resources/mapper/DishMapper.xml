@@ -27,5 +27,60 @@
                     #{createUser},
                     #{updateUser})
     </insert>
+    <update id="update">
+            update sky_take_out.dish
+            <set>
+                <if test="name != null">
+                    name = #{name},
+                </if>
+                <if test="categoryId != null">
+                    category_id = #{categoryId},
+                </if>
+                <if test="price != null">
+                    price = #{price},
+                </if>
+                <if test="image != null">
+                    image = #{image},
+                </if>
+                <if test="description != null">
+                    description = #{description},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="updateTime != null">
+                    update_time = #{updateTime},
+                </if>
+                <if test="updateUser != null">
+                    update_user = #{updateUser},
+                </if>
+            </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteBatchByIds">
+        delete from sky_take_out.dish where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+          #{id}
+        </foreach>
+
+    </delete>
+    <select id="DishPageQuery" resultType="com.sky.vo.DishVO">
+        select d.* , c.name as categoryName
+        from sky_take_out.dish d join sky_take_out.category c on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null ">
+                and d.status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultType="com.sky.entity.Dish">
+        select * from sky_take_out.dish where id = #{id}
+    </select>
 
 </mapper>

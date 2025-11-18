@@ -15,4 +15,14 @@
             </foreach>
 
     </insert>
+    <delete id="deleteBatchByDishIds">
+        delete from sky_take_out.dish_flavor where dish_id in
+        <foreach collection="list" item="dishId" separator="," open="(" close=")">
+            #{dishId}
+        </foreach>
+    </delete>
+    <select id="getByDishId" resultType="com.sky.entity.DishFlavor">
+        select * from sky_take_out.dish_flavor where dish_id = #{dishId}
+    </select>
+
 </mapper>
