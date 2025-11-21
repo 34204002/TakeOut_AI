@@ -94,4 +94,14 @@ public class DishController {
         dishService.startOrStop(status,id);
         return Result.success();
     }
+    /**
+     * 根据categoryId查询菜品
+     * @return the result
+     */
+    @GetMapping("/list")
+    public Result<List<DishVO>> list(Long categoryId){
+        log.info("根据categoryId查询菜品:{}",categoryId);
+        List<DishVO> list = dishService.list(categoryId);
+        return Result.success(list);
+    }
 }
