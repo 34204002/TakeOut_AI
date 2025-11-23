@@ -63,4 +63,27 @@ public class setmealController {
         SetmealVO setmealVO = setmealService.getById(id);
         return Result.success(setmealVO);
     }
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    public Result<String> update(@RequestBody SetmealDTO setmealDTO){
+        log.info("修改套餐:{}",setmealDTO);
+        setmealService.update(setmealDTO);
+        return Result.success();
+    }
+    /**
+     * 停售/起售套餐
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result<String> startOrStop(@PathVariable Integer status,Long id){
+        log.info("起售/停售套餐:{},{}",status,id);
+        setmealService.startOrStop(status,id);
+        return Result.success();
+    }
 }

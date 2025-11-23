@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -69,6 +70,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param ids
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteBatchByIds(List<Long> ids) {
         if(ids != null && !ids.isEmpty())
             ids.forEach(id -> {
@@ -91,5 +93,34 @@ public class SetmealServiceImpl implements SetmealService {
        setmealVO.setSetmealDishes(setmealDishMapper.getSetmealDishBySetmealId(id));
        setmealVO.setCategoryName(categoryMapper.getById(setmealVO.getCategoryId()).getName());
        return setmealVO;
+    }
+
+    /**
+     * @param setmealDTO
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        setmealMapper.update(setmeal);
+        setmealDishMapper.deleteBatchBySetmealIds(Collections.singletonList(setmealDTO.getId()));
+        if (setmealDTO.getSetmealDishes() != null && !setmealDTO.getSetmealDishes().isEmpty()){
+
+            List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+
+            setmealDishes.forEach(dish -> dish.setSetmealId(setmeal.getId()));
+
+            setmealDishMapper.addBatchSetmealDish(setmealDishes);
+        }
+    }
+
+    /**
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        setmealMapper.update(Setmeal.builder().status(status).id(id).build());
     }
 }

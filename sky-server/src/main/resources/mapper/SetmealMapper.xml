@@ -26,6 +26,32 @@
                 #{image},
                 #{description})
     </insert>
+    <update id="update">
+            update sky_take_out.setmeal
+            <set>
+                <if test="name != null">
+                    name = #{name},
+                </if>
+                <if test="price != null">
+                    price = #{price},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="description != null">
+                    description = #{description},
+                </if>
+                <if test="image != null">
+                    image = #{image},
+                </if>
+                <if test="categoryId != null">
+                    category_id = #{categoryId},
+                </if>
+                update_time = #{updateTime},
+                update_user = #{updateUser}
+                where id = #{id}
+            </set>
+    </update>
     <delete id="deleteBatchByIds">
         delete from sky_take_out.setmeal
         where id in
