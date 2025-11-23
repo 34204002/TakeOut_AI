@@ -5,6 +5,7 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface SetmealMapper {
 
 
     List<Setmeal> SetmealPageQuery(SetmealPageQueryDTO dto);
+
+    SetmealVO getById(Long id);
+
+    void deleteBatchByIds(List<Long> ids);
 }

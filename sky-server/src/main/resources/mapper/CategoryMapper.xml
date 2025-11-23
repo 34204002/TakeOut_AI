@@ -32,5 +32,9 @@
     <select id="GetByType" resultType="com.sky.entity.Category">
         select * from sky_take_out.category where type = #{type} and status = 1
     </select>
+    <select id="getById" resultType="com.sky.entity.Category">
+        select * from sky_take_out.category where id = #{id}
+    </select>
+
 
 </mapper>

@@ -26,6 +26,13 @@
                 #{image},
                 #{description})
     </insert>
+    <delete id="deleteBatchByIds">
+        delete from sky_take_out.setmeal
+        where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
     <select id="SetmealPageQuery" resultType="com.sky.entity.Setmeal">
         select *
         from sky_take_out.setmeal
@@ -40,6 +47,11 @@
                 and status = #{status}
             </if>
         </where>
+    </select>
+    <select id="getById" resultType="com.sky.vo.SetmealVO">
+            select *
+            from sky_take_out.setmeal
+            where id = #{id}
     </select>
 
 </mapper>

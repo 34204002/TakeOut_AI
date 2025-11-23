@@ -3,10 +3,13 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.annotation.AutoFill;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -26,6 +29,10 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealMapper setmealMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+
     /**
      * @param setmealDTO
      */
@@ -56,5 +63,33 @@ public class SetmealServiceImpl implements SetmealService {
         Long total=page.getTotal();
         return new PageResult(total,list);
 
+    }
+
+    /**
+     * @param ids
+     */
+    @Override
+    public void deleteBatchByIds(List<Long> ids) {
+        if(ids != null && !ids.isEmpty())
+            ids.forEach(id -> {
+                SetmealVO setmealVO = setmealMapper.getById(id);
+                if(setmealVO.getStatus() == 1)
+                    throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            });
+        setmealMapper.deleteBatchByIds(ids);
+        setmealDishMapper.deleteBatchBySetmealIds(ids);
+
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealVO getById(Long id) {
+       SetmealVO setmealVO = setmealMapper.getById(id);
+       setmealVO.setSetmealDishes(setmealDishMapper.getSetmealDishBySetmealId(id));
+       setmealVO.setCategoryName(categoryMapper.getById(setmealVO.getCategoryId()).getName());
+       return setmealVO;
     }
 }

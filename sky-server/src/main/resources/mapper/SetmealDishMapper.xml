@@ -17,9 +17,18 @@
              #{setmealDish.copies})
         </foreach>
     </insert>
+    <delete id="deleteBatchBySetmealIds">
+        delete from sky_take_out.setmeal_dish where setmeal_id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
 
 
     <select id="getSetmealIdByDishId" resultType="java.lang.Long">
         select setmeal_id from sky_take_out.setmeal_dish where dish_id = #{dishId}
+    </select>
+    <select id="getSetmealDishBySetmealId" resultType="com.sky.entity.SetmealDish">
+        select * from sky_take_out.setmeal_dish where setmeal_id = #{setmealId}
     </select>
 </mapper>
