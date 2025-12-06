@@ -1,0 +1,30 @@
+package com.sky.controller.user;
+
+import com.sky.result.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController("userShopController")
+@RequestMapping("/user/shop")
+@Slf4j
+public class ShopController {
+    private final static String KEY = "SHOP_STATUS";
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * 查询店铺营业状态.
+     *
+     * @return the result
+     */
+    @GetMapping("/status")
+    public Result<String> getStatus(){
+        Integer status = Integer.parseInt (redisTemplate.opsForValue().get(KEY).toString());
+        log.info("获取营业状态:{}",status == 1 ? "营业中" : "打烊中");
+        return Result.success( status== 1 ? "营业中" : "打烊中");
+    }
+}
