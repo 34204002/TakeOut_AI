@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 菜品 管理
  */
-@RestController
+@RestController("adminDishController")
 @RequestMapping("/admin/dish")
 @Slf4j
 public class DishController {
@@ -101,7 +101,7 @@ public class DishController {
     @GetMapping("/list")
     public Result<List<DishVO>> list(Long categoryId){
         log.info("根据categoryId查询菜品:{}",categoryId);
-        List<DishVO> list = dishService.list(categoryId);
+        List<DishVO> list = dishService.getByCategoryId(categoryId);
         return Result.success(list);
     }
 }

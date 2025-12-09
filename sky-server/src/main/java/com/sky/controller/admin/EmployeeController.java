@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 员工管理
  */
-@RestController
+@RestController("adminEmployeeController")
 @RequestMapping("/admin/employee")
 @Slf4j
 public class EmployeeController {

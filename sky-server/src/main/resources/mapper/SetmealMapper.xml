@@ -79,5 +79,12 @@
             from sky_take_out.setmeal
             where id = #{id}
     </select>
+    <select id="getByCategoryId" resultType="com.sky.vo.SetmealVO">
+        select *
+        from sky_take_out.setmeal
+        where status = 1
+        and category_id = #{categoryId}
+    </select>
+
 
 </mapper>

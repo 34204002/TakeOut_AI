@@ -14,6 +14,7 @@ import com.sky.service.UserService;
 import com.sky.utils.HttpClientUtil;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.UserLoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     //微信服务接口地址
     private static final String WX_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";

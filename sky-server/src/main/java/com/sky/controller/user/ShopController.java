@@ -22,9 +22,9 @@ public class ShopController {
      * @return the result
      */
     @GetMapping("/status")
-    public Result<String> getStatus(){
+    public Result<Integer> getStatus(){
         Integer status = Integer.parseInt (redisTemplate.opsForValue().get(KEY).toString());
         log.info("获取营业状态:{}",status == 1 ? "营业中" : "打烊中");
-        return Result.success( status== 1 ? "营业中" : "打烊中");
+        return Result.success(status);
     }
 }

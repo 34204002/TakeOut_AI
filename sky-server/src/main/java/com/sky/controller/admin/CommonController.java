@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
-@RestController
+@RestController("adminCommonController")
 @RequestMapping("admin/common")
 @Slf4j
 public class CommonController {

@@ -93,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      */
     @Override
-    public List<Category> GetByType(Integer type) {
+    public List<Category> getByType(Integer type) {
 
         List<Category> list = categoryMapper.GetByType(type);
         return list;

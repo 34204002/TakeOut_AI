@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("adminCategoryController")
 @RequestMapping("/admin/category")
 @Slf4j
 public class CategoryController {
@@ -82,7 +82,7 @@ public class CategoryController {
     @GetMapping("/list")
     public Result<List<Category>> GetByType(Integer type){
         log.info("查询分类信息:{}",type);
-        List<Category> list = categoryService.GetByType(type);
+        List<Category> list = categoryService.getByType(type);
         return Result.success(list);
     }
     /**

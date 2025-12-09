@@ -146,6 +146,7 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
+     * 启售/停售
      * @param status
      * @param id
      */
@@ -159,18 +160,24 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
+     * 根据分类id查询菜品
      * @param categoryId
      * @return
      */
     @Override
-    public List<DishVO> list(Long categoryId) {
-        List<Dish> list1= dishMapper.getByCategoryId(categoryId);
+    public List<DishVO> getByCategoryId(Long categoryId) {
+        List<Dish> list1 = dishMapper.getByCategoryId(categoryId);
         List<DishVO> list2 = new ArrayList<>();
-        for (Dish dish : list1) {
-            DishVO dishVO = new DishVO();
-            BeanUtils.copyProperties(dish,dishVO);
-            dishVO.setFlavors(dishFlavorMapper.getByDishId(dish.getId()));
-            list2.add(dishVO);
+        if (list1 != null) {
+            for (Dish dish : list1) {
+                if (dish != null) {
+                    DishVO dishVO = new DishVO();
+                    BeanUtils.copyProperties(dish, dishVO);
+                    List<DishFlavor> flavors = dishFlavorMapper.getByDishId(dish.getId());
+                    dishVO.setFlavors(flavors != null ? flavors : new ArrayList<>());
+                    list2.add(dishVO);
+                }
+            }
         }
         return list2;
     }
