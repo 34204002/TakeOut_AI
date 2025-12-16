@@ -20,7 +20,7 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    CategoryServiceImpl categoryService;
+    CategoryService categoryService;
 
     /**
      * 新增分类

@@ -2,6 +2,7 @@ package com.sky.controller.user;
 
 
 import com.sky.result.Result;
+import com.sky.service.SetmealService;
 import com.sky.service.impl.SetmealServiceImpl;
 import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
@@ -22,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class SetmealController {
     @Autowired
-    private SetmealServiceImpl setmealService;
+    private SetmealService setmealService;
     /**
      * 根据分类id查询套餐
      *

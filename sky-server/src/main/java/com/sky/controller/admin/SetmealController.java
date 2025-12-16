@@ -4,6 +4,7 @@ import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
+import com.sky.service.SetmealService;
 import com.sky.service.impl.SetmealServiceImpl;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class SetmealController {
     @Autowired
-    private SetmealServiceImpl setmealService;
+    private SetmealService setmealService;
 
     /**
      * 新增套餐

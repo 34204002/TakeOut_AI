@@ -2,6 +2,7 @@ package com.sky.controller.user;
 
 import com.sky.entity.Category;
 import com.sky.result.Result;
+import com.sky.service.CategoryService;
 import com.sky.service.impl.CategoryServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryServiceImpl categoryService;
+    private CategoryService categoryService;
 
     /**
      * 根据type查询菜品分类

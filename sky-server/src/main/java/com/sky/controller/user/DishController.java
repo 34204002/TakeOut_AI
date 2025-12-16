@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 import com.sky.result.Result;
+import com.sky.service.DishService;
 import com.sky.service.impl.DishServiceImpl;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class DishController {
     @Autowired
-    private DishServiceImpl dishService;
+    private DishService dishService;
     
     /**
      * 根据分类id查询菜品

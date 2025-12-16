@@ -17,6 +17,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
 @Aspect
@@ -41,14 +42,35 @@ public class AutoFillAspect {
 
         if(autoFill.value()== OperationType.INSERT){
             //为四个字段赋值
-            entity.getClass().getMethod(AutoFillConstant.SET_CREATE_TIME,LocalDateTime.class).invoke(entity,now);
-            entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class).invoke(entity,now);
-            entity.getClass().getMethod(AutoFillConstant.SET_CREATE_USER,Long.class).invoke(entity,id);
-            entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,Long.class).invoke(entity,id);
+            // 添加非空判断，避免 NoSuchMethodException
+            setMethodValue(entity, AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class, now);
+            setMethodValue(entity, AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class, now);
+            setMethodValue(entity, AutoFillConstant.SET_CREATE_USER, Long.class, id);
+            setMethodValue(entity, AutoFillConstant.SET_UPDATE_USER, Long.class, id);
         } else if (autoFill.value() == OperationType.UPDATE) {
             //为两个字段赋值
-            entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class).invoke(entity,now);
-            entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,Long.class).invoke(entity,id);
+            setMethodValue(entity, AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class, now);
+            setMethodValue(entity, AutoFillConstant.SET_UPDATE_USER, Long.class, id);
+        }
+    }
+
+    /**
+     * 通过反射为对象属性赋值
+     * @param entity 对象
+     * @param methodName 方法名
+     * @param paramType 参数类型
+     * @param paramValue 参数值
+     */
+    private void setMethodValue(Object entity, String methodName, Class<?> paramType, Object paramValue) {
+        try {
+            Method method = entity.getClass().getMethod(methodName, paramType);
+            method.invoke(entity, paramValue);
+        } catch (NoSuchMethodException e) {
+            // 方法不存在，跳过
+            log.warn("Method {} not found in class {}", methodName, entity.getClass().getSimpleName());
+        } catch (Exception e) {
+            // 其他异常
+            log.error("Error while invoking method {}: {}", methodName, e.getMessage());
         }
     }
 }

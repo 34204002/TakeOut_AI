@@ -74,7 +74,7 @@
             </if>
         </where>
     </select>
-    <select id="getById" resultType="com.sky.vo.SetmealVO">
+    <select id="getById" resultType="com.sky.entity.Setmeal">
             select *
             from sky_take_out.setmeal
             where id = #{id}

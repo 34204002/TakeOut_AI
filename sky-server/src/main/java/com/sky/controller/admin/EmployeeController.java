@@ -28,7 +28,7 @@ public class EmployeeController {
     @Autowired
     private JwtProperties jwtProperties;
     @Autowired
-    private EmployeeServiceImpl employeeServiceImpl;
+    private EmployeeService employeeServiceImpl;
 
     /**
      * 登录
