@@ -8,6 +8,7 @@ import com.sky.service.impl.SetmealServiceImpl;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +70,7 @@ public class SetmealController {
      * @return
      */
     @PutMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> update(@RequestBody SetmealDTO setmealDTO){
         log.info("修改套餐:{}",setmealDTO);
         setmealService.update(setmealDTO);
@@ -81,6 +83,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status,Long id){
         log.info("起售/停售套餐:{},{}",status,id);
         setmealService.startOrStop(status,id);
