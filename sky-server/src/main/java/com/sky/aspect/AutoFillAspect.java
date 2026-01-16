@@ -67,7 +67,7 @@ public class AutoFillAspect {
             method.invoke(entity, paramValue);
         } catch (NoSuchMethodException e) {
             // 方法不存在，跳过
-            log.warn("Method {} not found in class {}", methodName, entity.getClass().getSimpleName());
+            log.warn("Method {} not found in class {}，skip", methodName, entity.getClass().getSimpleName());
         } catch (Exception e) {
             // 其他异常
             log.error("Error while invoking method {}: {}", methodName, e.getMessage());
