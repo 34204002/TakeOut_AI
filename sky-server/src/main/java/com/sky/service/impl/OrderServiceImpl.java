@@ -33,6 +33,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private AddressBookMapper addressBookMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * @param ordersSubmitDTO
@@ -67,8 +69,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orders.setAmount(sumAmount);
         orders.setNumber(generateOrderNumber());
-        //TODO 设置用户名
-
+        orders.setUserName(userMapper.getById(orders.getUserId()).getName());
         orderMapper.insert(orders);
         //向订单明细表插入n条数据
         List<OrderDetail> orderDetailList = new ArrayList<>();

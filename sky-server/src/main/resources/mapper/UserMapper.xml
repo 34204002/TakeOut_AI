@@ -11,4 +11,19 @@
     <select id="getByOpenid" resultType="com.sky.entity.User">
         select * from sky_take_out.user where openid = #{openid}
     </select>
+    <select id="getById" resultType="com.sky.entity.User">
+        select * from sky_take_out.user where id = #{id}
+    </select>
+
+    <update id="updateById" parameterType="com.sky.entity.User">
+        update sky_take_out.user
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="idNumber != null and idNumber != ''">id_number = #{idNumber},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

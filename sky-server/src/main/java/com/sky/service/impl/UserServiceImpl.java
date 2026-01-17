@@ -51,9 +51,18 @@ public class UserServiceImpl implements UserService {
             if (user == null) {//新用户，注册
                 user = User.builder()
                         .openid(openid)
+                        .name(userLoginDTO.getName()) // 使用从微信获取的名称
+                        .avatar(userLoginDTO.getAvatar()) // 使用从微信获取的头像
+                        .sex(userLoginDTO.getSex()) // 使用从微信获取的性别
                         .createTime(LocalDateTime.now())
                         .build();
                 userMapper.insert(user);
+            } else {
+                // 老用户，更新用户信息
+                user.setName(userLoginDTO.getName());
+                user.setAvatar(userLoginDTO.getAvatar());
+                user.setSex(userLoginDTO.getSex());
+                userMapper.updateById(user);
             }
             //生成jwt令牌
             Map<String, Object> claims = new HashMap<>();
