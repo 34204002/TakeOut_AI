@@ -5,8 +5,6 @@ import com.sky.entity.AddressBook;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.service.AddressBookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +13,7 @@ import java.util.List;
 public class AddressBookServiceImpl implements AddressBookService {
     @Autowired
     private AddressBookMapper addressBookMapper;
-    @Autowired
-    private SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar;
-    @Autowired
-    private ConversionService conversionService;
+
 
     /**
      * @param addressBook
