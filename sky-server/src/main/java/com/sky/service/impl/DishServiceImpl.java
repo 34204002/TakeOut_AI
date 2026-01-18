@@ -74,7 +74,7 @@ public class DishServiceImpl implements DishService {
         dishMapper.DishPageQuery(dto);
 
         List<DishVO> dishList = page.getResult();
-        Long total = page.getTotal();
+        long total = page.getTotal();
 
         return new PageResult(total,dishList);
     }

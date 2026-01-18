@@ -7,6 +7,13 @@
         insert into sky_take_out.shopping_cart (user_id, dish_id, setmeal_id, dish_flavor, name, image, number, amount, create_time)
         values (#{userId}, #{dishId}, #{setmealId}, #{dishFlavor}, #{name}, #{image}, #{number}, #{amount}, #{createTime})
     </insert>
+    <insert id="insertBatch">
+        insert into sky_take_out.shopping_cart (user_id, dish_id, setmeal_id, dish_flavor, name, image, number, amount, create_time)
+        values
+        <foreach collection="list" item="shoppingCart" separator=",">
+            (#{shoppingCart.userId}, #{shoppingCart.dishId}, #{shoppingCart.setmealId}, #{shoppingCart.dishFlavor}, #{shoppingCart.name}, #{shoppingCart.image}, #{shoppingCart.number}, #{shoppingCart.amount}, #{shoppingCart.createTime})
+        </foreach>
+    </insert>
 
     <select id="list" parameterType="com.sky.entity.ShoppingCart" resultType="com.sky.entity.ShoppingCart">
         select * from sky_take_out.shopping_cart
