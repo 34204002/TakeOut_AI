@@ -77,7 +77,7 @@
         SELECT * FROM sky_take_out.orders WHERE id = #{id}
     </select>
 
-    <select id="pageQueryByUserId" resultType="com.sky.vo.OrderVO">
+    <select id="pageQuery" resultType="com.sky.vo.OrderVO">
         SELECT * FROM
             sky_take_out.orders
         <where>

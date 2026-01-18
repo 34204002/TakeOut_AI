@@ -26,7 +26,7 @@ public interface OrderMapper {
 
     Orders getById(Long id);
 
-    List<OrderVO> pageQueryByUserId(OrdersPageQueryDTO ordersPageQueryDTO);
+    List<OrderVO> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
 
 }

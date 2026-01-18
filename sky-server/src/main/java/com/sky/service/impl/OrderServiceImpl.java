@@ -172,9 +172,9 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageResult pageQueryByUserId(OrdersPageQueryDTO ordersPageQueryDTO) {
+    public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
         Page<OrderVO> page = PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        List<OrderVO> orderVOList = orderMapper.pageQueryByUserId(ordersPageQueryDTO);
+        List<OrderVO> orderVOList = orderMapper.pageQuery(ordersPageQueryDTO);
 
         for (OrderVO orderVO : orderVOList) {
             // 查询订单详情

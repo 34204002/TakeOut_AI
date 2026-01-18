@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * 用户订单控制器
  * 处理用户端的订单相关请求
  */
-@RestController
+@RestController("userOrderController")
 @RequestMapping ("/user/order")
 @Slf4j
 public class OrderController {
@@ -82,7 +82,7 @@ public class OrderController {
     @GetMapping("/historyOrders")
     public Result<PageResult> list(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("历史订单查询：{}",ordersPageQueryDTO);
-        PageResult pageResult = orderService.pageQueryByUserId(ordersPageQueryDTO);
+        PageResult pageResult = orderService.pageQuery(ordersPageQueryDTO);
         return Result.success(pageResult);
     }
     /**
