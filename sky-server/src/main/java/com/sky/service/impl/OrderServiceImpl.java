@@ -5,9 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -15,8 +13,10 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -189,11 +189,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param id
+     * @param ordersCancelDTO
      */
     @Override
-    public void cancel(Long id) {
-        Orders order = orderMapper.getById(id);
+    public void userCancel(OrdersCancelDTO ordersCancelDTO) {
+        Orders order = orderMapper.getById(ordersCancelDTO.getId());
         if (order == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
@@ -209,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
         }
         // 需要给用户退款
         order.setPayStatus(Orders.REFUND);
-        order.setCancelReason("用户取消");
+        order.setCancelReason(ordersCancelDTO.getCancelReason());
         order.setCancelTime(LocalDateTime.now());
         orderMapper.update(order);
     }
@@ -232,6 +232,61 @@ public class OrderServiceImpl implements OrderService {
             shoppingCartList.add(shoppingCart);
         }
         shoppingCartMapper.insertBatch(shoppingCartList);
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public OrderStatisticsVO caculateStatistics() {
+        List<Orders> orders = orderMapper.list();
+        long toBeConfirmed = orders.stream().filter(order -> order.getStatus().equals(Orders.TO_BE_CONFIRMED)).count();
+        long confirmed = orders.stream().filter(order -> order.getStatus().equals(Orders.CONFIRMED)).count();
+        long deliveryInProgress = orders.stream().filter(order -> order.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)).count();
+        return OrderStatisticsVO.builder()
+                .toBeConfirmed(toBeConfirmed)
+                .confirmed(confirmed)
+                .deliveryInProgress(deliveryInProgress)
+                .build();
+    }
+
+    /**
+     * @param orders
+     */
+    @Override
+    public void update(Orders orders) {
+        orderMapper.update(orders);
+    }
+
+    /**
+     * @param ordersRejectionDTO
+     */
+    @Override
+    public void reject(OrdersRejectionDTO ordersRejectionDTO) {
+        orderMapper.update(Orders.builder()
+                .id(ordersRejectionDTO.getId())
+                .rejectionReason(ordersRejectionDTO.getRejectionReason())
+                .status(Orders.CANCELLED)
+                .build());
+
+    }
+
+    /**
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void adminCancel(OrdersCancelDTO ordersCancelDTO) {
+        Orders order = orderMapper.getById(ordersCancelDTO.getId());
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        order.setStatus(Orders.CANCELLED);
+        // 需要给用户退款
+        order.setPayStatus(Orders.REFUND);
+        order.setCancelReason(ordersCancelDTO.getCancelReason());
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.update(order);
+
     }
 
     /**

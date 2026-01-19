@@ -99,5 +99,8 @@
         </where>
         ORDER BY order_time DESC
     </select>
+    <select id="list" resultType="com.sky.entity.Orders">
+        SELECT * FROM sky_take_out.orders
+    </select>
 
 </mapper>
