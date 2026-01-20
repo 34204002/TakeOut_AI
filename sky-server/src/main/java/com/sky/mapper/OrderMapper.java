@@ -6,6 +6,7 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -31,4 +32,6 @@ public interface OrderMapper {
 
 
     List<Orders> list();
+
+    List<Orders> getByStatusAndOrderTimeOut(Integer status, LocalDateTime orderTime);
 }

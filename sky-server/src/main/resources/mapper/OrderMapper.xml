@@ -102,5 +102,8 @@
     <select id="list" resultType="com.sky.entity.Orders">
         SELECT * FROM sky_take_out.orders
     </select>
+    <select id="getByStatusAndOrderTimeOut" resultType="com.sky.entity.Orders">
+        SELECT * FROM sky_take_out.orders WHERE status = #{status} AND order_time <![CDATA[<=]]> #{orderTime}
+    </select>
 
 </mapper>

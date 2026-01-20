@@ -16,6 +16,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -41,6 +44,8 @@ public class OrderServiceImpl implements OrderService {
     private AddressBookMapper addressBookMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * @param ordersSubmitDTO
@@ -145,6 +150,15 @@ public class OrderServiceImpl implements OrderService {
                 .payStatus(Orders.PAID)
                 .checkoutTime(LocalDateTime.now())
                 .build();
+        //websocket推送支付成功信息给商家
+        Map map = new HashMap();
+        map.put("type", 1);//type=1来单提醒，type=2客户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content","订单号:"+outTradeNo);
+
+        String jsonString = JSONObject.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
+
 
         orderMapper.update(orders);
     }

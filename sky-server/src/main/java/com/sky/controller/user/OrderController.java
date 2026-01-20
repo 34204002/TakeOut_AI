@@ -88,11 +88,12 @@ public class OrderController {
     }
     /**
      * 取消订单
-     * @param ordersCancelDTO 取消订单参数
+     * @param id 订单ID
      * @return Result<String> 取消结果
      */
     @PutMapping("/cancel/{id}")
-    public Result<String> cancel(@PathVariable OrdersCancelDTO ordersCancelDTO) {
+    public Result<String> cancel(@PathVariable Long id) {
+        OrdersCancelDTO ordersCancelDTO = OrdersCancelDTO.builder().id(id).cancelReason("用户取消").build();
         log.info("取消订单：{}", ordersCancelDTO);
         orderService.userCancel(ordersCancelDTO);
         return Result.success();
