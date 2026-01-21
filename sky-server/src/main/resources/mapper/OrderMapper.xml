@@ -105,5 +105,15 @@
     <select id="getByStatusAndOrderTimeOut" resultType="com.sky.entity.Orders">
         SELECT * FROM sky_take_out.orders WHERE status = #{status} AND order_time <![CDATA[<=]]> #{orderTime}
     </select>
+    <select id="getTurnoverStatistics" resultType="com.sky.entity.Turnover">
+            SELECT
+                DATE_FORMAT(order_time, '%Y-%m-%d') AS date,
+                SUM(amount) AS turnover
+            FROM sky_take_out.orders
+            WHERE status = 5
+              AND DATE_FORMAT(order_time,'%Y-%m-%d') BETWEEN #{begin} AND #{end}
+            GROUP BY date
+            ORDER BY date
+    </select>
 
 </mapper>
