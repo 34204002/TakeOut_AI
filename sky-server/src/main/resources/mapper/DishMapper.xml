@@ -86,5 +86,7 @@
         select * from sky_take_out.dish where category_id = #{categoryId}
     </select>
 
-
+    <select id="list" resultType="com.sky.entity.Dish">
+        select * from sky_take_out.dish
+    </select>
 </mapper>

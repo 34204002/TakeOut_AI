@@ -86,5 +86,8 @@
         and category_id = #{categoryId}
     </select>
 
+    <select id="list" resultType="com.sky.entity.Setmeal">
+        select * from sky_take_out.setmeal
+    </select>
 
 </mapper>

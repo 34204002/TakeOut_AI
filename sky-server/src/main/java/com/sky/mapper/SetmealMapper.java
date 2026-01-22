@@ -25,5 +25,7 @@ public interface SetmealMapper {
     @AutoFill(value = OperationType.UPDATE)
     void update(Setmeal setmeal);
 
+    List<Setmeal> list();
+
     List<SetmealVO> getByCategoryId(Integer categoryId);
 }
