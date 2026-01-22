@@ -8,15 +8,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Turnover implements Serializable {
+public class UserReport implements Serializable {
+    //日期
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
+    //新增用户数量
+    private Long userCount;
 
-    private Double turnover;
+
 }

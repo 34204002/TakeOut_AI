@@ -14,6 +14,18 @@
     <select id="getById" resultType="com.sky.entity.User">
         select * from sky_take_out.user where id = #{id}
     </select>
+    <select id="getUserStatistics" resultType="com.sky.entity.UserReport">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+            COUNT(id) AS user_count
+        FROM sky_take_out.user
+        WHERE DATE_FORMAT(create_time,'%Y-%m-%d') BETWEEN #{begin} AND #{end}
+        GROUP BY date
+        ORDER BY date
+    </select>
+    <select id="countByCreateTimeBefore" resultType="java.lang.Long">
+        select count(id) from sky_take_out.user where create_time <![CDATA[<=]]> #{time}
+    </select>
 
     <update id="updateById" parameterType="com.sky.entity.User">
         update sky_take_out.user

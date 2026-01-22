@@ -2,8 +2,9 @@ package com.sky.mapper;
 
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
-import com.sky.entity.Turnover;
-import com.sky.vo.OrderStatisticsVO;
+import com.sky.entity.OrdersReport;
+import com.sky.entity.TurnoverReport;
+import com.sky.entity.UserReport;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -37,5 +38,7 @@ public interface OrderMapper {
 
     List<Orders> getByStatusAndOrderTimeOut(Integer status, LocalDateTime orderTime);
 
-    List<Turnover> getTurnoverStatistics(LocalDate begin, LocalDate end);
+    List<TurnoverReport> getTurnoverStatistics(LocalDate begin, LocalDate end);
+
+    List<OrdersReport> getOrdersStatistics(LocalDate begin, LocalDate end);
 }
