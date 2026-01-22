@@ -4,7 +4,6 @@ import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.entity.OrdersReport;
 import com.sky.entity.TurnoverReport;
-import com.sky.entity.UserReport;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -41,4 +40,6 @@ public interface OrderMapper {
     List<TurnoverReport> getTurnoverStatistics(LocalDate begin, LocalDate end);
 
     List<OrdersReport> getOrdersStatistics(LocalDate begin, LocalDate end);
+
+    List<Integer> getIdByStatusAndOrderTimeBetween(Integer completed, LocalDate begin, LocalDate end);
 }

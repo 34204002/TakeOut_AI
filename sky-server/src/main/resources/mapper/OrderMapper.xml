@@ -125,5 +125,9 @@
             GROUP BY date
             ORDER BY date
     </select>
+    <select id="getIdByStatusAndOrderTimeBetween" resultType="java.lang.Integer">
+        SELECT id FROM sky_take_out.orders WHERE status = #{completed} AND DATE_FORMAT(order_time,'%Y-%m-%d') BETWEEN #{begin} AND #{end}
+    </select>
+
 
 </mapper>

@@ -13,4 +13,17 @@
     <select id="getByOrderId" resultType="com.sky.entity.OrderDetail">
         select * from sky_take_out.order_detail where order_id=#{orderId}
     </select>
+
+    <select id="getProductSalesByOrderId" resultType="com.sky.entity.OrderDetailReport">
+        SELECT name, SUM(number) as total_number FROM sky_take_out.order_detail
+        WHERE order_id IN
+        <foreach collection="validOrderIdList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        GROUP BY name
+        ORDER BY total_number DESC
+        LIMIT 10
+    </select>
+
+
 </mapper>
