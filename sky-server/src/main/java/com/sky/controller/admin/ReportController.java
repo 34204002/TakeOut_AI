@@ -6,6 +6,7 @@ import com.sky.vo.OrderReportVO;
 import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,12 @@ public class ReportController {
         SalesTop10ReportVO data= reportService.top10(begin, end);
         log.info("查询结果：{}", data);
         return Result.success(data);
+    }
+    @GetMapping("/export")
+    public Result<String> export(HttpServletResponse response) {
+        log.info("导出数据");
+        reportService.export(response);
+        return Result.success();
     }
 
 
