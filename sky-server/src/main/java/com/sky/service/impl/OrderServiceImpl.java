@@ -13,6 +13,7 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.service.OrderRemarkService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -48,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private WebSocketServer webSocketServer;
+    
+    @Autowired
+    private OrderRemarkService orderRemarkService;
 
     /**
      * @param ordersSubmitDTO
@@ -85,6 +90,22 @@ public class OrderServiceImpl implements OrderService {
         orders.setNumber(generateOrderNumber());
         orders.setUserName(userMapper.getById(orders.getUserId()).getName());
         orderMapper.insert(orders);
+        
+        // 【新增】异步触发 AI 备注解析
+        if (ordersSubmitDTO.getRemark() != null && !ordersSubmitDTO.getRemark().isEmpty()) {
+            Long finalOrderId = orders.getId();
+            String finalRemark = ordersSubmitDTO.getRemark();
+            
+            CompletableFuture.runAsync(() -> {
+                try {
+                    orderRemarkService.parseAndSaveRemark(finalOrderId, finalRemark);
+                } catch (Exception e) {
+                    // 记录日志但不影响下单主流程
+                    System.err.println("AI 备注解析失败: " + e.getMessage());
+                }
+            });
+        }
+
         //向订单明细表插入n条数据
         List<OrderDetail> orderDetailList = new ArrayList<>();
         for (ShoppingCart shoppingCart : shoppingCartList) {

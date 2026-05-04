@@ -27,7 +27,11 @@
             delivery_time,
             pack_amount,
             tableware_number,
-            tableware_status
+            tableware_status,
+            remark_flavor,
+            remark_delivery,
+            remark_urgency,
+            ai_parse_status
         )
         VALUES (
                    #{number},
@@ -52,7 +56,11 @@
                    #{deliveryTime},
                    #{packAmount},
                    #{tablewareNumber},
-                   #{tablewareStatus}
+                   #{tablewareStatus},
+                   #{remarkFlavor},
+                   #{remarkDelivery},
+                   #{remarkUrgency},
+                   #{aiParseStatus}
                )
     </insert>
     <update id="update" parameterType="com.sky.entity.Orders">
@@ -65,7 +73,11 @@
             <if test="payMethod != null"> pay_method=#{payMethod}, </if>
             <if test="checkoutTime != null"> checkout_time=#{checkoutTime}, </if>
             <if test="status != null"> status = #{status}, </if>
-            <if test="deliveryTime != null"> delivery_time = #{deliveryTime} </if>
+            <if test="deliveryTime != null"> delivery_time = #{deliveryTime}, </if>
+            <if test="remarkFlavor != null"> remark_flavor = #{remarkFlavor}, </if>
+            <if test="remarkDelivery != null"> remark_delivery = #{remarkDelivery}, </if>
+            <if test="remarkUrgency != null"> remark_urgency = #{remarkUrgency}, </if>
+            <if test="aiParseStatus != null"> ai_parse_status = #{aiParseStatus} </if>
         </set>
         where id = #{id}
     </update>

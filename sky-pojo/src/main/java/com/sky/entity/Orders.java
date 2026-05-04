@@ -81,7 +81,26 @@ public class Orders implements Serializable {
     //收货人
     private String consignee;
 
-    //订单取消原因
+    /**
+     * 口味标签（JSON数组）
+     */
+    private String remarkFlavor;
+
+    /**
+     * 配送标签（JSON数组）
+     */
+    private String remarkDelivery;
+
+    /**
+     * 紧急程度（0普通 1加急 2特急）
+     */
+    private Integer remarkUrgency;
+
+    /**
+     * AI解析状态（0未解析 1已解析 2解析失败）
+     */
+    private Integer aiParseStatus;
+
     private String cancelReason;
 
     //订单拒绝原因
