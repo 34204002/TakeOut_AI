@@ -1,15 +1,15 @@
-package com.sky.service.impl;
+package com.sky.ai.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sky.entity.OrderRemarkTag;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
-import com.sky.mapper.OrderRemarkTagMapper;
-import com.sky.service.OrderRemarkService;
+import com.sky.ai.mapper.OrderRemarkTagMapper;
+import com.sky.ai.service.OrderRemarkService;
+import com.sky.ai.util.AiCallUtil;
 import com.sky.vo.OrderRemarkVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class OrderRemarkServiceImpl implements OrderRemarkService {
 
     @Autowired
-    private ChatModel chatModel;
+    private AiCallUtil aiCallUtil;
 
     @Autowired
     private OrderRemarkTagMapper orderRemarkTagMapper;
@@ -92,7 +92,7 @@ public class OrderRemarkServiceImpl implements OrderRemarkService {
                 remark
         );
 
-        String response = chatModel.call(prompt);
+        String response = aiCallUtil.callChatModel(prompt);
         log.info("AI 解析备注原始响应: {}", response);
 
         // 清理 Markdown 格式

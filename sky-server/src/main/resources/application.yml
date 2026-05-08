@@ -34,11 +34,24 @@ spring:
     redis:
       host: ${sky.redis.host}
       port: ${sky.redis.port}
-      password: ${sky.redis.password}
+      password: ${sky.redis.password:}
+      database: 0
+  ai:
+    openai:
+      api-key: ${spring.ai.openai.api-key}
+      base-url: ${spring.ai.openai.base-url}
+      chat:
+        options:
+          model: ${spring.ai.openai.chat.options.model}
+      embedding:
+        options:
+          model: ${spring.ai.openai.embedding.options.model}
+    vectorstore:
+      simple:
+        initialize-schema: true
 
 mybatis:
-  #mapper配置文件
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml,classpath:ai/mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
     #开启驼峰命名
@@ -76,3 +89,4 @@ sky:
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
+

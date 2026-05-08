@@ -1,4 +1,4 @@
-package com.sky.service;
+package com.sky.ai.service;
 
 import com.sky.vo.OrderRemarkVO;
 

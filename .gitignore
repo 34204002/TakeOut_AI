@@ -7,3 +7,6 @@
 **/application-*.yml
 **/application-*.yaml
 **/application-*.properties
+chat-memory/
+/vector-store-marketing.json
+/vector-store-review.json

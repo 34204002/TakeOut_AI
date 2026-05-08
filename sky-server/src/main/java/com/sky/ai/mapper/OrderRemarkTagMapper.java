@@ -1,4 +1,4 @@
-package com.sky.mapper;
+package com.sky.ai.mapper;
 
 import com.sky.entity.OrderRemarkTag;
 import org.apache.ibatis.annotations.Mapper;

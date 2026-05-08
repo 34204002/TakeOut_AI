@@ -13,16 +13,15 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
-import com.sky.service.OrderRemarkService;
+import com.sky.ai.service.AiAsyncService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
-import org.aspectj.weaver.ast.Or;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
@@ -52,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private WebSocketServer webSocketServer;
     
     @Autowired
-    private OrderRemarkService orderRemarkService;
+    private AiAsyncService aiAsyncService;
 
     /**
      * @param ordersSubmitDTO
@@ -93,17 +92,8 @@ public class OrderServiceImpl implements OrderService {
         
         // 【新增】异步触发 AI 备注解析
         if (ordersSubmitDTO.getRemark() != null && !ordersSubmitDTO.getRemark().isEmpty()) {
-            Long finalOrderId = orders.getId();
-            String finalRemark = ordersSubmitDTO.getRemark();
-            
-            CompletableFuture.runAsync(() -> {
-                try {
-                    orderRemarkService.parseAndSaveRemark(finalOrderId, finalRemark);
-                } catch (Exception e) {
-                    // 记录日志但不影响下单主流程
-                    System.err.println("AI 备注解析失败: " + e.getMessage());
-                }
-            });
+            // 调用异步服务解析订单备注
+            aiAsyncService.parseOrderRemarkAsync(orders.getId(), ordersSubmitDTO.getRemark());
         }
 
         //向订单明细表插入n条数据

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.ai.mapper.ReviewReplyDraftMapper">
+
+    <insert id="insert" parameterType="com.sky.entity.ReviewReplyDraft" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sky_take_out.review_reply_draft (
+            order_id, review_id, review_content, ai_analysis,
+            retrieved_templates, generated_reply, status,
+            ai_model, token_usage, create_time, update_time, create_user
+        ) VALUES (
+            #{orderId}, #{reviewId}, #{reviewContent}, #{aiAnalysis},
+            #{retrievedTemplates}, #{generatedReply}, #{status},
+            #{aiModel}, #{tokenUsage}, NOW(), NOW(), #{createUser}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.sky.entity.ReviewReplyDraft">
+        UPDATE sky_take_out.review_reply_draft
+        SET status = #{status},
+            merchant_modified_reply = #{merchantModifiedReply},
+            publish_time = #{publishTime},
+            update_time = NOW(),
+            update_user = #{updateUser}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

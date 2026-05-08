@@ -1,19 +1,33 @@
+# 开发环境配置示例（复制此文件为 application-dev.yml 并填入真实值）
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: localhost
     port: 3306
     database: sky_take_out
-    username: your_username
-    password: your_password
+    username: root
+    password: ${DB_PASSWORD:your-database-password}
+  redis:
+    host: localhost
+    port: 6379
+    password: ${REDIS_PASSWORD:}
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: your_access_key_id
-    access-key-secret: your_access_key_secret
-    bucket-name: your_bucket_name
-  redis:
-    host:
-    port:
+    access-key-id: ${OSS_ACCESS_KEY_ID:your-access-key-id}
+    access-key-secret: ${OSS_ACCESS_KEY_SECRET:your-access-key-secret}
+    bucket-name: your-bucket-name
   wechat:
-    appid:
-    secret:
+    appid: ${WECHAT_APPID:your-wechat-appid}
+    secret: ${WECHAT_SECRET:your-wechat-secret}
+
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:your-openai-api-key}
+      base-url: https://api.siliconflow.cn/v1
+      chat:
+        options:
+          model: deepseek-ai/DeepSeek-V3
+      embedding:
+        options:
+          model: BAAI/bge-m3

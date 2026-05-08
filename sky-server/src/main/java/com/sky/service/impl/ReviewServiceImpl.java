@@ -8,9 +8,9 @@ import com.sky.entity.Review;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ReviewMapper;
 import com.sky.service.ReviewService;
+import com.sky.ai.service.AiAsyncService;
 import com.sky.vo.ReviewVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +30,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private AiAsyncService aiAsyncService;
 
     @Override
     public void submitReview(ReviewSubmitDTO reviewSubmitDTO) {
@@ -63,7 +66,23 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
 
         reviewMapper.insert(review);
-        log.info("用户提交评价成功，订单ID: {}, 用户ID: {}", reviewSubmitDTO.getOrderId(), userId);
+        log.info("用户提交评价成功，订单ID: {}, 用户ID: {}, reviewId: {}", reviewSubmitDTO.getOrderId(), userId, review.getId());
+        
+        Review savedReview = reviewMapper.getByOrderId(reviewSubmitDTO.getOrderId());
+        if (savedReview == null) {
+            log.error("评价插入后查询失败，订单ID: {}", reviewSubmitDTO.getOrderId());
+            return;
+        }
+        
+        Long reviewId = savedReview.getId();
+        String reviewContent = reviewSubmitDTO.getContent();
+        Integer rating = reviewSubmitDTO.getRating();
+        
+        log.info("准备异步生成AI回复，reviewId: {}, orderId: {}, rating: {}", reviewId, reviewSubmitDTO.getOrderId(), rating);
+        
+        // 调用异步服务生成AI回复
+        aiAsyncService.generateReviewReplyAsync(reviewId, reviewContent, rating);
+
     }
 
     @Override
