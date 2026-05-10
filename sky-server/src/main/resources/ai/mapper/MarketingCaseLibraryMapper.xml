@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.ai.mapper.MarketingCaseLibraryMapper">
+
+    <insert id="insert" parameterType="com.sky.entity.MarketingCaseLibrary" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sky_take_out.marketing_case_library (
+            dish_category, activity_type, channel, style,
+            case_title, case_content, character_count, has_emoji,
+            performance_score, usage_count, conversion_rate,
+            compliance_notes, tags, status,
+            create_user, create_time, update_user, update_time
+        ) VALUES (
+            #{dishCategory}, #{activityType}, #{channel}, #{style},
+            #{caseTitle}, #{caseContent}, #{characterCount}, #{hasEmoji},
+            #{performanceScore}, #{usageCount}, #{conversionRate},
+            #{complianceNotes}, #{tags}, #{status},
+            #{createUser}, #{createTime}, #{updateUser}, #{updateTime}
+        )
+    </insert>
+
+    <update id="incrementUsageCount">
+        UPDATE sky_take_out.marketing_case_library
+        SET usage_count = usage_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="update" parameterType="com.sky.entity.MarketingCaseLibrary">
+        UPDATE sky_take_out.marketing_case_library
+        <set>
+            <if test="performanceScore != null">performance_score = #{performanceScore},</if>
+            <if test="usageCount != null">usage_count = #{usageCount},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
