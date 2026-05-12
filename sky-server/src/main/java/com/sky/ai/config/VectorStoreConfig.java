@@ -23,6 +23,10 @@ public class VectorStoreConfig {
     
     // 营销文案知识库持久化文件路径
     private static final String MARKETING_VECTOR_STORE_FILE = "vector-store-marketing.json";
+    
+    // 客服知识库持久化文件路径
+    private static final String CUSTOMER_SERVICE_VECTOR_STORE_FILE = "vector-store-customer-service.json";
+
 
     @Autowired
     private EmbeddingModel embeddingModel;
@@ -97,6 +101,44 @@ public class VectorStoreConfig {
                 log.info("营销文案向量数据已保存到: {}", storeFile.getAbsolutePath());
             } catch (Exception e) {
                 log.error("保存营销文案向量数据失败", e);
+            }
+        }));
+        
+        return vectorStore;
+    }
+
+    /**
+     * 客服知识库向量存储
+     * 用于存储客服问答知识库，支持智能客服自动回答
+     *
+     * @return 客服专用的 SimpleVectorStore 实例
+     */
+    @Bean("customerServiceVectorStore")
+    public SimpleVectorStore customerServiceVectorStore() {
+        log.info("初始化客服知识库向量存储: {}", CUSTOMER_SERVICE_VECTOR_STORE_FILE);
+        
+        SimpleVectorStore vectorStore = SimpleVectorStore.builder(embeddingModel).build();
+        File storeFile = new File(CUSTOMER_SERVICE_VECTOR_STORE_FILE);
+        
+        // 启动时加载已有数据
+        if (storeFile.exists()) {
+            try {
+                vectorStore.load(storeFile);
+                log.info("客服知识库向量数据加载成功: {}", storeFile.getAbsolutePath());
+            } catch (Exception e) {
+                log.error("加载客服知识库向量数据失败", e);
+            }
+        } else {
+            log.info("客服知识库向量存储文件不存在，将创建新的向量库");
+        }
+        
+        // 退出时自动保存数据
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                vectorStore.save(storeFile);
+                log.info("客服知识库向量数据已保存到: {}", storeFile.getAbsolutePath());
+            } catch (Exception e) {
+                log.error("保存客服知识库向量数据失败", e);
             }
         }));
         

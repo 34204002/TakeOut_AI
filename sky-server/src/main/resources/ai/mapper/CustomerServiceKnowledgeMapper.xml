@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.ai.mapper.CustomerServiceKnowledgeMapper">
+
+    <!-- 查询所有启用的知识库 -->
+    <select id="listAll" resultType="com.sky.entity.CustomerServiceKnowledge">
+        SELECT * FROM sky_take_out.customer_service_knowledge
+        WHERE status = 1
+        ORDER BY sort_weight ASC
+    </select>
+
+    <!-- 根据分类查询 -->
+    <select id="listByCategory" resultType="com.sky.entity.CustomerServiceKnowledge">
+        SELECT * FROM sky_take_out.customer_service_knowledge
+        WHERE category = #{category} AND status = 1
+        ORDER BY sort_weight ASC
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="getById" resultType="com.sky.entity.CustomerServiceKnowledge">
+        SELECT * FROM sky_take_out.customer_service_knowledge
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sky_take_out.customer_service_knowledge
+        (category, keywords, question, answer, sort_weight, status, create_time)
+        VALUES
+        (#{category}, #{keywords}, #{question}, #{answer}, #{sortWeight}, #{status}, NOW())
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update">
+        UPDATE sky_take_out.customer_service_knowledge
+        SET category = #{category},
+            keywords = #{keywords},
+            question = #{question},
+            answer = #{answer},
+            sort_weight = #{sortWeight},
+            status = #{status},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM sky_take_out.customer_service_knowledge
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="listByPage" resultType="com.sky.entity.CustomerServiceKnowledge">
+        SELECT * FROM sky_take_out.customer_service_knowledge
+        ORDER BY sort_weight ASC, create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 总数 -->
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM sky_take_out.customer_service_knowledge
+    </select>
+
+</mapper>
