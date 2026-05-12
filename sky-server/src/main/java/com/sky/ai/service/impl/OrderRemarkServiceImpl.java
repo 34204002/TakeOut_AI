@@ -11,10 +11,15 @@ import com.sky.ai.util.AiCallUtil;
 import com.sky.vo.OrderRemarkVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,6 +36,9 @@ public class OrderRemarkServiceImpl implements OrderRemarkService {
     private OrderMapper orderMapper; // 注入 OrderMapper
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // Skill 内容缓存，避免重复读取文件
+    private final ConcurrentHashMap<String, String> skillCache = new ConcurrentHashMap<>();
 
     // 标准标签库
     private static final List<String> FLAVOR_TAGS = Arrays.asList("不辣", "微辣", "中辣", "重辣", "少盐", "多醋", "不要葱", "不要蒜", "不要香菜", "免辣");
@@ -74,23 +82,10 @@ public class OrderRemarkServiceImpl implements OrderRemarkService {
      * 使用 AI 解析备注
      */
     private OrderRemarkVO parseByAi(String remark) {
-        String prompt = String.format(
-                "你是一个订单备注解析助手。请从下面的【标准标签库】中选择符合用户备注的标签。\n\n" +
-                "【标准标签库】\n" +
-                "口味：%s\n" +
-                "配送：%s\n" +
-                "时效：%s\n\n" +
-                "【要求】\n" +
-                "1. 只能从上述列表中选择，不要创造新词\n" +
-                "2. 输出严格的 JSON 格式：{\"flavorTags\": [], \"deliveryTags\": [], \"urgencyLevel\": 0}\n" +
-                "3. urgencyLevel: 0-普通, 1-加急\n\n" +
-                "用户备注：%s\n" +
-                "JSON输出：",
-                String.join(", ", FLAVOR_TAGS),
-                String.join(", ", DELIVERY_TAGS),
-                String.join(", ", URGENCY_TAGS),
-                remark
-        );
+        // 加载 Skill 文件作为 System Prompt
+        String skillContent = loadSkillContent("order-remark-parser.md");
+        
+        String prompt = skillContent + "\n\n用户备注：" + remark + "\nJSON输出：";
 
         String response = aiCallUtil.callChatModel(prompt);
         log.info("AI 解析备注原始响应: {}", response);
@@ -154,5 +149,24 @@ public class OrderRemarkServiceImpl implements OrderRemarkService {
         } catch (Exception e) {
             log.error("保存订单备注标签失败", e);
         }
+    }
+
+    /**
+     * 加载 Skill 文件内容（带缓存）
+     */
+    private String loadSkillContent(String fileName) {
+        // 先从缓存中获取
+        return skillCache.computeIfAbsent(fileName, key -> {
+            try {
+                ClassPathResource resource = new ClassPathResource("ai/skills/" + key);
+                String content = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                log.info("Skill 文件加载成功: {}, 大小: {} bytes", key, content.length());
+                return content;
+            } catch (IOException e) {
+                log.error("加载 Skill 文件失败: {}", key, e);
+                // 降级：返回默认提示词
+                return "你是订单备注解析专家，将自然语言备注转换为结构化标签。输出JSON格式：{\"flavorTags\": [], \"deliveryTags\": [], \"urgencyLevel\": 0}";
+            }
+        });
     }
 }

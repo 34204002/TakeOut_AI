@@ -1,4 +1,3 @@
-
 package com.sky.ai.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +14,17 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +54,9 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
     private SimpleVectorStore vectorStore;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // Skill 内容缓存，避免重复读取文件
+    private final ConcurrentHashMap<String, String> skillCache = new ConcurrentHashMap<>();
 
     @Override
     public void generateReplyDraft(Long reviewId, String reviewContent, Integer rating) {
@@ -163,17 +170,16 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
      * AI 分析评价情感和意图
      */
     private Map<String, String> analyzeReview(String content, Integer rating) {
+        // 加载 Skill 文件
+        String skillContent = loadSkillContent("review-reply-assistant.md");
+        
         String prompt = String.format(
-            "你是一个评价分析助手。请分析以下用户评价的情绪等级、问题类型、核心诉求。\n\n" +
+            "%s\n\n【任务】请分析以下用户评价：\n" +
             "【评价内容】%s\n" +
             "【评分】%d星\n\n" +
-            "【要求】\n" +
-            "1. emotion: 愤怒/满意/中性\n" +
-            "2. type: 配送超时/口味问题/服务态度/菜品质量/其他\n" +
-            "3. demand: 退款/改进/道歉/其他\n" +
-            "4. 输出严格的 JSON 格式：{\"emotion\": \"\", \"type\": \"\", \"demand\": \"\"}\n\n" +
+            "输出严格的 JSON 格式：{\"emotion\": \"\", \"type\": \"\", \"demand\": \"\"}\n" +
             "JSON输出：",
-            content, rating
+            skillContent, content, rating
         );
 
         String response = aiCallUtil.callChatModel(prompt);
@@ -234,23 +240,21 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
      */
     private String generateReply(String reviewContent, String emotion, String problemType,
                                  String demand, List<ReviewReplyKnowledge> templates) {
+        // 加载 Skill 文件
+        String skillContent = loadSkillContent("review-reply-assistant.md");
+        
         String templateStr = templates.isEmpty() ? "无参考模板" :
                 templates.stream().map(ReviewReplyKnowledge::getReplyTemplate).reduce((a, b) -> a + "\n" + b).get();
 
         String prompt = String.format(
-                "你是一个专业的客服助手。请根据以下信息生成一条礼貌、专业的回复。\n\n" +
+                "%s\n\n【任务】根据以下信息生成回复：\n" +
                         "【用户评价】%s\n" +
                         "【情绪分析】%s\n" +
                         "【问题类型】%s\n" +
                         "【用户诉求】%s\n\n" +
                         "【参考模板】\n%s\n\n" +
-                        "【要求】\n" +
-                        "1. 语气诚恳、专业\n" +
-                        "2. 针对用户提到的具体问题回应\n" +
-                        "3. 如果有合理诉求，给出解决方案\n" +
-                        "4. 控制在 100 字以内\n\n" +
                         "回复内容：",
-                reviewContent, emotion, problemType, demand, templateStr
+                skillContent, reviewContent, emotion, problemType, demand, templateStr
         );
 
         return aiCallUtil.callChatModel(prompt);
@@ -324,5 +328,24 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
         } catch (Exception e) {
             log.error("存入 RAG 库失败，reviewId: {}", reviewId, e);
         }
+    }
+
+    /**
+     * 加载 Skill 文件内容（带缓存）
+     */
+    private String loadSkillContent(String fileName) {
+        // 先从缓存中获取
+        return skillCache.computeIfAbsent(fileName, key -> {
+            try {
+                ClassPathResource resource = new ClassPathResource("ai/skills/" + key);
+                String content = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                log.info("Skill 文件加载成功: {}, 大小: {} bytes", key, content.length());
+                return content;
+            } catch (IOException e) {
+                log.error("加载 Skill 文件失败: {}", key, e);
+                // 降级：返回默认提示词
+                return "你是客服回复专家，生成专业、得体的差评回复。遵循五段式结构：称呼、共情道歉、解释解决、补偿承诺、邀请回访。";
+            }
+        });
     }
 }

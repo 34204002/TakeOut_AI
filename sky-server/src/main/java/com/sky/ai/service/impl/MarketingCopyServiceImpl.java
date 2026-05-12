@@ -17,11 +17,16 @@ import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -52,6 +57,9 @@ public class MarketingCopyServiceImpl implements MarketingCopyService {
     private SimpleVectorStore vectorStore;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // Skill 内容缓存，避免重复读取文件
+    private final ConcurrentHashMap<String, String> skillCache = new ConcurrentHashMap<>();
 
     // 渠道字数限制
     private static final Map<String, Integer> CHANNEL_LIMITS = new HashMap<>();
@@ -426,8 +434,11 @@ public class MarketingCopyServiceImpl implements MarketingCopyService {
      * 构造批量生成 Prompt（一次生成3条）
      */
     private String buildBatchPrompt(Dish dish, MarketingGenerateDTO dto, String casesStr, int charLimit) {
+        // 加载 Skill 文件
+        String skillContent = loadSkillContent("marketing-copywriter.md");
+        
         return String.format(
-                "你是一个专业的营销文案创作助手。请根据以下信息生成 3 条不同角度的营销文案。\n\n" +
+                "%s\n\n【任务】根据以下信息生成 3 条不同角度的营销文案：\n" +
                 "【菜品信息】\n" +
                 "名称：%s\n" +
                 "价格：%.2f元\n" +
@@ -443,13 +454,11 @@ public class MarketingCopyServiceImpl implements MarketingCopyService {
                 "   - 文案2：特色导向（突出食材品质、制作工艺）\n" +
                 "   - 文案3：紧迫感导向（突出限时限量、先到先得）\n" +
                 "2. 每条文案字数控制在 %d 字以内\n" +
-                "3. 语气符合'%s'风格\n" +
-                "4. 适当使用emoji增强吸引力\n" +
-                "5. 不要使用'最'、'第一'、'绝对'等违禁词\n" +
-                "6. **严格按以下格式输出**，用 '|||' 分隔3条文案：\n" +
+                "3. **严格按以下格式输出**，用 '|||' 分隔3条文案：\n" +
                 "   文案1内容|||文案2内容|||文案3内容\n" +
-                "7. 直接输出文案内容，不要加序号、引号或其他说明\n\n" +
+                "4. 直接输出文案内容，不要加序号、引号或其他说明\n\n" +
                 "输出：",
+                skillContent,
                 dish.getName(),
                 dish.getPrice(),
                 dish.getDescription() != null ? dish.getDescription() : "无",
@@ -457,8 +466,7 @@ public class MarketingCopyServiceImpl implements MarketingCopyService {
                 dto.getChannel(),
                 dto.getStyle(),
                 casesStr,
-                charLimit,
-                dto.getStyle()
+                charLimit
         );
     }
 
@@ -583,5 +591,24 @@ public class MarketingCopyServiceImpl implements MarketingCopyService {
         MarketingCaseVO vo = new MarketingCaseVO();
         BeanUtils.copyProperties(library, vo);
         return vo;
+    }
+
+    /**
+     * 加载 Skill 文件内容（带缓存）
+     */
+    private String loadSkillContent(String fileName) {
+        // 先从缓存中获取
+        return skillCache.computeIfAbsent(fileName, key -> {
+            try {
+                ClassPathResource resource = new ClassPathResource("ai/skills/" + key);
+                String content = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                log.info("Skill 文件加载成功: {}, 大小: {} bytes", key, content.length());
+                return content;
+            } catch (IOException e) {
+                log.error("加载 Skill 文件失败: {}", key, e);
+                // 降级：返回默认提示词
+                return "你是营销文案专家，为餐饮菜品生成吸引人的推广文案。生成3条不同角度：优惠导向、特色导向、紧迫感导向。遵循渠道规范和广告法要求。";
+            }
+        });
     }
 }

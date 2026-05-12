@@ -6,8 +6,8 @@ import com.sky.vo.OrderReportVO;
 import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,6 +21,7 @@ import java.time.LocalDate;
 @RestController
 @Slf4j
 @RequestMapping ("/admin/report")
+@Tag(name = "经营数据统计接口")
 public class ReportController {
     @Autowired
     private ReportService reportService;
@@ -71,6 +72,4 @@ public class ReportController {
         reportService.export(response);
         return Result.success();
     }
-
-
 }
