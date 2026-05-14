@@ -1,4 +1,4 @@
-# SkyTakeOut - 智能外卖订单管理系统
+# TakeOut - 智能外卖订单管理系统
 
 基于 Spring Boot 3 + Spring AI 的外卖全流程业务平台，覆盖 C 端用户下单、B 端商家接单、管理端运营全场景。
 
